@@ -34,4 +34,11 @@ public class HashAlgorithm {
         }
         return hashedPassword.toString();
     }
+
+    public static void main(String[] args) {
+        String password = "sherwoodalex2004";
+
+        System.out.println(hashPassword(password));
+        System.out.println(hashPassword(password));
+    }
 }
