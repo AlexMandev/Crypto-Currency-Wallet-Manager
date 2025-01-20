@@ -2,9 +2,13 @@ package bg.sofia.uni.fmi.mjt.crypto.wallet.user;
 
 import bg.sofia.uni.fmi.mjt.crypto.wallet.algorithm.HashAlgorithm;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Objects;
 
-public class User {
+public class User implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 9191793071732236523L;
 
     private final String username;
     private final String hashedPassword;

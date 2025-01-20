@@ -6,12 +6,17 @@ import bg.sofia.uni.fmi.mjt.crypto.wallet.exception.UnavailableAssetException;
 import bg.sofia.uni.fmi.mjt.crypto.wallet.model.Asset;
 import bg.sofia.uni.fmi.mjt.crypto.wallet.storage.AssetsCatalog;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Wallet {
+public class Wallet implements Serializable {
+    @Serial
+    private static final long serialVersionUID = -7459989033155017236L;
+
     private static final String BALANCE = "Balance: ";
     private static final String WALLET_SUMMARY = "Wallet Summary:";
     private static final String OVERALL_WALLET_SUMMARY = "Overall Wallet Summary:";
@@ -88,7 +93,7 @@ public class Wallet {
         double income = soldAmount * asset.getPrice();
         double diff = income - totalSpentOnAsset;
 
-        ownedAssets.put(asset, INITIAL_BALANCE);
+        ownedAssets.remove(asset);
         balance += income;
 
         assetProfits.put(asset, assetProfits.getOrDefault(asset, 0.0) + diff);

@@ -10,9 +10,9 @@ public interface UserRepository {
 
     void addUser(User user) throws UserAlreadyExistsException;
 
-    void loadFromFile(Path path);
+    void load(Path path);
 
-    void saveToFile(Path path);
+    void save(Path path);
 
     Map<String, User> getUsers();
 }
