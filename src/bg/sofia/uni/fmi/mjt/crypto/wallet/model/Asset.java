@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 
 public class Asset {
-    private static final int IS_CRYPTO_INTEGER = 1;
+    private static final int TYPE_IS_CRYPTO_VALUE = 1;
 
     @SerializedName("asset_id")
     private final String assetId;
@@ -35,7 +35,7 @@ public class Asset {
     }
 
     public boolean isCrypto() {
-        return isCrypto == IS_CRYPTO_INTEGER;
+        return isCrypto == TYPE_IS_CRYPTO_VALUE;
     }
 
     @Override
