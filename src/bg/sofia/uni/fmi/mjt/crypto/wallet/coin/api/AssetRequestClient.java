@@ -24,6 +24,7 @@ public class AssetRequestClient {
         this.apiKey = apiKey;
     }
 
+    // TO DO LATER : log errors
     public HttpResponse<String> getAllAssets() {
         HttpResponse<String> apiResponse;
 
