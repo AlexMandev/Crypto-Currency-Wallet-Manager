@@ -20,6 +20,7 @@ public class AssetsCatalog {
         if (newAssets == null) {
             throw new IllegalArgumentException("List of new assets cannot be null.");
         }
+        assetsMap.clear();
         newAssets.stream()
                 .filter(Asset::isCrypto)
                 .limit(MAX_ASSETS)
