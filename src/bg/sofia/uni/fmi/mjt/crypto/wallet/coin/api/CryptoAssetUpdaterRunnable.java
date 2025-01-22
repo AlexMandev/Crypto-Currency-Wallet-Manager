@@ -7,6 +7,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.net.http.HttpResponse;
+import java.util.List;
 
 public class CryptoAssetUpdaterRunnable implements Runnable {
 
@@ -25,7 +26,7 @@ public class CryptoAssetUpdaterRunnable implements Runnable {
         HttpResponse<String> apiResponse = assetRequestClient.getAllAssets();
 
         if (apiResponse != null) {
-            Type bodyType = new TypeToken<Asset[]>() { }.getType();
+            Type bodyType = new TypeToken<List<Asset>>() { }.getType();
             catalogToUpdate.updateCatalog(GSON.fromJson(apiResponse.body(), bodyType));
         }
     }
