@@ -10,6 +10,7 @@ public class CommandFactory {
     private static final String WHITESPACE_REGEX = "\\s+";
     private static final int COMMAND_ARGUMENTS_LIMIT = 2;
     private static final String UNKNOWN_COMMAND_MESSAGE = "Unknown command.";
+    private static final String HELP_COMMAND = "help";
 
     private final UserRepository users;
     private final AssetsCatalog assetsCatalog;
@@ -26,11 +27,12 @@ public class CommandFactory {
         String trimmedInput = input.replaceAll(WHITESPACE_REGEX, " ").trim();
 
         String[] parts = trimmedInput.split(" ", COMMAND_ARGUMENTS_LIMIT);
-        String command = parts[0];
+        String command = parts[0].toLowerCase();
         String[] arguments = parts.length > 1 ? parts[1].split(" ") : new String[0];
 
-        switch (command) {
+        return switch (command) {
+            case HELP_COMMAND -> new HelpCommand(arguments, key);
             default -> throw new UnknownCommandException(UNKNOWN_COMMAND_MESSAGE);
-        }
+        };
     }
 }

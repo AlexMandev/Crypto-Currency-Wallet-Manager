@@ -12,8 +12,10 @@ public abstract class Command {
         this.selectionKey = selectionKey;
     }
 
-    public boolean validateArguments() {
-        return arguments != null;
+    public void validateArguments() {
+        if (selectionKey == null) {
+            throw new IllegalArgumentException("SelectionKey of command cannot be null.");
+        }
     }
 
     public abstract String execute();
