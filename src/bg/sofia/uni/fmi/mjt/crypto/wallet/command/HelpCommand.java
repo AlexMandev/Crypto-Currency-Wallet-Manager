@@ -9,6 +9,7 @@ public class HelpCommand extends Command {
 
     public HelpCommand(String[] arguments, SelectionKey selectionKey) {
         super(arguments, selectionKey);
+        validateArguments();
     }
 
     @Override

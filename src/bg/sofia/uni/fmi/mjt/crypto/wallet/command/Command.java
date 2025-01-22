@@ -13,6 +13,9 @@ public abstract class Command {
     }
 
     public void validateArguments() {
+        if (arguments == null) {
+            throw new IllegalArgumentException("Command arguments cannot be null.");
+        }
         if (selectionKey == null) {
             throw new IllegalArgumentException("SelectionKey of command cannot be null.");
         }
