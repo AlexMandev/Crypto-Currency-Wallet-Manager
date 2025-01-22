@@ -73,8 +73,7 @@ public class CryptoCurrencyWalletManagerNioServer {
                 while (iterator.hasNext()) {
                     SelectionKey currentKey = iterator.next();
                     if (currentKey.isReadable()) {
-                        SocketChannel client = (SocketChannel) currentKey.channel();
-                        handleClientRequest(client);
+                        handleReadableKey(currentKey);
                     } else if (currentKey.isAcceptable()) {
                         ServerSocketChannel serverSocketChannel = (ServerSocketChannel) currentKey.channel();
                         SocketChannel currentClient = serverSocketChannel.accept();
@@ -89,10 +88,11 @@ public class CryptoCurrencyWalletManagerNioServer {
         }
     }
 
-    private void handleClientRequest(SocketChannel client) throws IOException {
+    private void handleReadableKey(SelectionKey key) throws IOException {
+        SocketChannel client = (SocketChannel) key.channel();
         String clientMessage = getClientMessage(client);
         try {
-            Command clientCommand = commandFactory.of(clientMessage);
+            Command clientCommand = commandFactory.of(clientMessage, key);
             sendMessageToClient(client, clientCommand.execute());
         } catch (UnknownCommandException | InvalidCommandArgumentException | CommandArgumentCountException e) {
             sendMessageToClient(client, e.getMessage());
