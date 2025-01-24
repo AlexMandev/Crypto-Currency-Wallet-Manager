@@ -3,7 +3,7 @@ package bg.sofia.uni.fmi.mjt.crypto.wallet.command;
 import java.nio.channels.SelectionKey;
 
 public abstract class Command {
-
+    protected static final String HELP_MESSAGE = "Enter help in the console, if you want to see all commands.";
     protected final String[] arguments;
     protected final SelectionKey selectionKey;
 

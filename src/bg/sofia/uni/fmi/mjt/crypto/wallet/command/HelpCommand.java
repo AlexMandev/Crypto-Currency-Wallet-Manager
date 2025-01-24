@@ -23,8 +23,8 @@ public class HelpCommand extends Command {
     @Override
     public String execute() {
         return "Available commands: " + System.lineSeparator() +
-                "login <name> <password>" + System.lineSeparator() +
-                "register <name> <password>" + System.lineSeparator() +
+                "login <username> <password>" + System.lineSeparator() +
+                "register <username> <password>" + System.lineSeparator() +
                 "deposit <amount>" + System.lineSeparator() +
                 "list-offerings" + System.lineSeparator() +
                 "buy <asset_id> <amount>" + System.lineSeparator() +
