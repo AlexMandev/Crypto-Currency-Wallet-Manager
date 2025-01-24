@@ -64,10 +64,14 @@ public class RegisterCommand extends Command {
             return ALREADY_LOGGED_IN;
         }
         try {
-            User user = new User(arguments[0], arguments[1]);
+            String username = arguments[0];
+            String password = arguments[1];
+            User user = new User(username, password);
             userRepository.addUser(user);
         } catch (UserAlreadyExistsException e) {
             return e.getMessage();
+        } catch (Exception e) {
+            // log error
         }
         return SUCCESSFUL_REGISTRATION;
     }
@@ -83,7 +87,7 @@ public class RegisterCommand extends Command {
 
     private void validatePassword() {
         if (arguments[1].length() < MIN_PASSWORD_LENGTH  || arguments[1].length() > MAX_PASSWORD_LENGTH) {
-            throw new InvalidCommandArgumentException(USERNAME_LENGTH_MESSAGE);
+            throw new InvalidCommandArgumentException(PASSWORD_LENGTH_MESSAGE);
         }
     }
 }

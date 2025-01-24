@@ -14,5 +14,7 @@ public interface UserRepository {
 
     void save(Path path);
 
+    User getUser(String username);
+
     Map<String, User> getUsers();
 }

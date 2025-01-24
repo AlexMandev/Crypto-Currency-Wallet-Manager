@@ -35,6 +35,13 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public void load(Path path) {
+        if (path == null) {
+            throw new IllegalArgumentException("Path cannot be null.");
+        }
+        if (!Files.isRegularFile(path)) {
+            throw new IllegalArgumentException("Path should be a valid file.");
+        }
+
         try (ObjectInputStream usersStream = new ObjectInputStream(Files.newInputStream(path))) {
             Map<String, User> loadedUsers = (HashMap<String, User>) usersStream.readObject();
             users.clear();
@@ -48,12 +55,24 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public void save(Path path) {
+        if (path == null) {
+            throw new IllegalArgumentException("Path cannot be null.");
+        }
+        if (!Files.isRegularFile(path)) {
+            throw new IllegalArgumentException("Path should be a valid file.");
+        }
+
         try (ObjectOutputStream usersStream
                      = new ObjectOutputStream(Files.newOutputStream(path))) {
             usersStream.writeObject(users);
         } catch (IOException e) {
             throw new UncheckedIOException("Error occurred when saving users to file.", e);
         }
+    }
+
+    @Override
+    public User getUser(String username) {
+        return users.getOrDefault(username, null);
     }
 
     @Override
