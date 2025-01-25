@@ -12,6 +12,9 @@ public class CommandFactory {
     private static final String UNKNOWN_COMMAND_MESSAGE = "Unknown command.";
     private static final String HELP_COMMAND = "help";
     private static final String LIST_OFFERINGS_COMMAND = "list-offerings";
+    private static final String LOGIN_COMMAND = "login";
+    private static final String REGISTER_COMMAND = "register";
+    private static final String DEPOSIT_COMMAND = "deposit";
 
     private final UserRepository users;
     private final AssetsCatalog assetsCatalog;
@@ -34,6 +37,9 @@ public class CommandFactory {
         return switch (command) {
             case LIST_OFFERINGS_COMMAND -> new ListOfferingsCommand(arguments, key, assetsCatalog);
             case HELP_COMMAND -> new HelpCommand(arguments, key);
+            case REGISTER_COMMAND -> new RegisterCommand(arguments, key, users);
+            case LOGIN_COMMAND -> new LoginCommand(arguments, key, users);
+            case DEPOSIT_COMMAND -> new DepositCommand(arguments, key);
             default -> throw new UnknownCommandException(UNKNOWN_COMMAND_MESSAGE);
         };
     }

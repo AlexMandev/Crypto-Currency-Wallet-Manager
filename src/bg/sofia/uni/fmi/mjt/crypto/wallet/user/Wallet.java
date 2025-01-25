@@ -41,6 +41,10 @@ public class Wallet implements Serializable {
         this.buyHistory = new HashMap<>();
     }
 
+    public double getBalance() {
+        return balance;
+    }
+
     public void deposit(double amount) {
         if (amount <= INITIAL_BALANCE) {
             throw new IllegalArgumentException("Deposit amount should be positive");

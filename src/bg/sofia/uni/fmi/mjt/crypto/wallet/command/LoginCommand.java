@@ -1,7 +1,6 @@
 package bg.sofia.uni.fmi.mjt.crypto.wallet.command;
 
 import bg.sofia.uni.fmi.mjt.crypto.wallet.exception.CommandArgumentCountException;
-import bg.sofia.uni.fmi.mjt.crypto.wallet.exception.InvalidCommandArgumentException;
 import bg.sofia.uni.fmi.mjt.crypto.wallet.storage.UserRepository;
 import bg.sofia.uni.fmi.mjt.crypto.wallet.user.User;
 
