@@ -5,13 +5,13 @@ import bg.sofia.uni.fmi.mjt.crypto.wallet.user.User;
 
 import java.nio.channels.SelectionKey;
 
-public class WalletSummaryCommand extends Command {
+public class WalletOverallSummaryCommand extends Command {
 
-    private static final int WALLET_SUMMARY_ARGUMENTS_COUNT = 0;
+    private static final int WALLET_OVERALL_SUMMARY_ARGUMENTS_COUNT = 0;
     private static final String INVALID_ARGUMENTS_COUNT_MESSAGE =
-            "The get-wallet-summary command doesn't have any arguments";
+            "The get-wallet-overall-summary command doesn't have any arguments";
 
-    public WalletSummaryCommand(String[] arguments, SelectionKey selectionKey) {
+    public WalletOverallSummaryCommand(String[] arguments, SelectionKey selectionKey) {
         super(arguments, selectionKey);
         validateArguments();
     }
@@ -24,13 +24,13 @@ public class WalletSummaryCommand extends Command {
 
         User user = (User) selectionKey.attachment();
 
-        return user.getWallet().getSummary();
+        return user.getWallet().getOverallSummary();
     }
 
     @Override
     public void validateArguments() {
         super.validateArguments();
-        if (arguments.length != WALLET_SUMMARY_ARGUMENTS_COUNT) {
+        if (arguments.length != WALLET_OVERALL_SUMMARY_ARGUMENTS_COUNT) {
             throw new CommandArgumentCountException(INVALID_ARGUMENTS_COUNT_MESSAGE);
         }
     }

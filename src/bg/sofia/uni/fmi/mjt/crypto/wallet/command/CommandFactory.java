@@ -19,6 +19,7 @@ public class CommandFactory {
     private static final String BUY_COMMAND = "buy";
     private static final String SELL_COMMAND = "sell";
     private static final String WALLET_SUMMARY_COMMAND = "get-wallet-summary";
+    private static final String WALLET_OVERALL_SUMMARY_COMMAND = "get-wallet-overall-summary";
 
     private final UserRepository users;
     private final AssetsCatalog assetsCatalog;
