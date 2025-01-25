@@ -15,7 +15,6 @@ public class BuyCommand extends Command {
     private static final String INSUFFICIENT_ARGUMENTS_MESSAGE = "You need to provide an asset ID and an amount.";
     private static final String INVALID_ARGUMENTS_COUNT_MESSAGE = "Invalid number of arguments for this command.";
     private static final String INVALID_DOLLAR_AMOUNT_MESSAGE = "The amount must be a positive number.";
-    private static final String NOT_LOGGED_IN_MESSAGE = "You need to login to perform this action.";
     private static final String SUCCESSFUL_PURCHASE_MESSAGE = "Purchase successful.";
     private static final String INSUFFICIENT_BALANCE_MESSAGE =
             "Insufficient balance to complete the purchase. Please check your wallet's balance";
@@ -45,6 +44,8 @@ public class BuyCommand extends Command {
             return INSUFFICIENT_BALANCE_MESSAGE;
         } catch (UnavailableAssetException e) {
             return UNAVAILABLE_ASSET_MESSAGE;
+        } catch (Exception e) {
+            //log error
         }
 
         return SUCCESSFUL_PURCHASE_MESSAGE + " " + REMAINING_BALANCE + user.getWallet().getBalance();

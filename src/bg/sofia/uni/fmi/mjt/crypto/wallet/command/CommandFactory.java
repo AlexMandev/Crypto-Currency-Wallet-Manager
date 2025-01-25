@@ -17,6 +17,7 @@ public class CommandFactory {
     private static final String DEPOSIT_COMMAND = "deposit";
     private static final String LOGOUT_COMMAND = "logout";
     private static final String BUY_COMMAND = "buy";
+    private static final String SELL_COMMAND = "sell";
 
     private final UserRepository users;
     private final AssetsCatalog assetsCatalog;
@@ -44,6 +45,7 @@ public class CommandFactory {
             case DEPOSIT_COMMAND -> new DepositCommand(arguments, key);
             case BUY_COMMAND -> new BuyCommand(arguments, key, assetsCatalog);
             case LOGOUT_COMMAND -> new LogoutCommand(arguments, key);
+            case SELL_COMMAND -> new SellCommand(arguments, key, assetsCatalog);
             default -> throw new UnknownCommandException(UNKNOWN_COMMAND_MESSAGE);
         };
     }
