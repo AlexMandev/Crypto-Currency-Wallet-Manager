@@ -25,6 +25,7 @@ public class HelpCommand extends Command {
         return "Available commands: " + System.lineSeparator() +
                 "login <username> <password>" + System.lineSeparator() +
                 "register <username> <password>" + System.lineSeparator() +
+                "logout <username> <password>" + System.lineSeparator() +
                 "deposit <amount>" + System.lineSeparator() +
                 "list-offerings" + System.lineSeparator() +
                 "buy <asset_id> <amount>" + System.lineSeparator() +

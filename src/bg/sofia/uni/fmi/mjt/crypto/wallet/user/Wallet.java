@@ -61,7 +61,7 @@ public class Wallet implements Serializable {
             throw new IllegalArgumentException("DollarAmount should be positive.");
         }
         if (dollarAmount > balance) {
-            throw new InsufficientBalanceException("Not enough funds to buy. Please check your balance.");
+            throw new InsufficientBalanceException("Not enough funds to buy. Please check the wallet's balance.");
         }
 
         Asset asset = currentAssetsCatalog.findById(assetId);
