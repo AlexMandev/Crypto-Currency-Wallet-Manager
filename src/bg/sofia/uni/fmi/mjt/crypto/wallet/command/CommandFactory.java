@@ -18,6 +18,7 @@ public class CommandFactory {
     private static final String LOGOUT_COMMAND = "logout";
     private static final String BUY_COMMAND = "buy";
     private static final String SELL_COMMAND = "sell";
+    private static final String WALLET_SUMMARY_COMMAND = "get-wallet-summary";
 
     private final UserRepository users;
     private final AssetsCatalog assetsCatalog;
