@@ -16,10 +16,16 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class CryptoCurrencyWalletManagerNioServer {
     private static final int BUFFER_SIZE = 8192;
     private static final String HOST = "localhost";
+
+    private static final long INITIAL_DELAY = 0;
+    private static final long MINUTES_BETWEEN_API_CALLS = 30;
 
     private final int port;
     private ByteBuffer buffer;
@@ -36,14 +42,17 @@ public class CryptoCurrencyWalletManagerNioServer {
     }
 
     public void start() {
-        try (ServerSocketChannel server = ServerSocketChannel.open()) {
+        try (ServerSocketChannel server = ServerSocketChannel.open();
+             ScheduledExecutorService cryptoAssetService = Executors.newSingleThreadScheduledExecutor()) {
+            cryptoAssetService.scheduleAtFixedRate(cryptoAssetUpdaterRunnable, INITIAL_DELAY,
+                    MINUTES_BETWEEN_API_CALLS, TimeUnit.MINUTES);
             selector = Selector.open();
             buffer = ByteBuffer.allocate(BUFFER_SIZE);
             configureServerSocketChannel(server, selector);
             isRunning = true;
             selectKeys();
         } catch (IOException e) {
-            // log server error
+            System.out.println(e.getMessage());
         } catch (Exception e) {
             // log error
         }
