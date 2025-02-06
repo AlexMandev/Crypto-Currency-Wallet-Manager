@@ -24,7 +24,7 @@ public class WalletOverallSummaryCommand extends Command {
 
         User user = (User) selectionKey.attachment();
 
-        return user.getWallet().getOverallSummary();
+        return user.getWallet().getOverallSummary().toString();
     }
 
     @Override

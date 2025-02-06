@@ -9,6 +9,7 @@ import bg.sofia.uni.fmi.mjt.crypto.wallet.storage.AssetsCatalog;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,13 +32,11 @@ public class Wallet implements Serializable {
 
     private double balance;
     private final Map<Asset, Double> ownedAssets;
-    private final Map<Asset, Double> assetProfits;
     private final Map<Asset, List<Double>> buyHistory;
 
     public Wallet() {
         this.balance = INITIAL_BALANCE;
         this.ownedAssets = new HashMap<>();
-        this.assetProfits = new HashMap<>();
         this.buyHistory = new HashMap<>();
     }
 
@@ -88,59 +87,44 @@ public class Wallet implements Serializable {
         if (!ownedAssets.containsKey(asset) || ownedAssets.get(asset) == 0.0) {
             throw new AssetNotOwnedException("Wallet doesn't contain this asset.");
         }
-        double soldAmount = ownedAssets.get(asset);
-        double totalSpentOnAsset = buyHistory.get(asset)
-                .stream()
-                .mapToDouble(Double::doubleValue)
-                .sum();
 
+        double soldAmount = ownedAssets.get(asset);
         double income = soldAmount * asset.getPrice();
-        double diff = income - totalSpentOnAsset;
 
         ownedAssets.remove(asset);
         balance += income;
 
-        assetProfits.put(asset, assetProfits.getOrDefault(asset, 0.0) + diff);
         buyHistory.remove(asset);
     }
 
-    public String getSummary() {
-        StringBuilder summary = new StringBuilder();
-
-        summary.append(WALLET_SUMMARY).append(System.lineSeparator());
-        summary.append(BALANCE).append(balance)
-                .append(DEFAULT_CURRENCY).append(System.lineSeparator());
-
-        ownedAssets.forEach((asset, amount) ->
-                summary.append(ASSET).append(asset.getName())
-                        .append(AMOUNT).append(amount).append(System.lineSeparator()));
-
-        return summary.toString();
+    public WalletSummary getSummary() {
+        return new WalletSummary(balance, Collections.unmodifiableMap(ownedAssets));
     }
 
-    public String getOverallSummary() {
-        StringBuilder overallSummary = new StringBuilder();
+    public OverallWalletSummary getOverallSummary(AssetsCatalog assetsCatalog) {
+        validateAssetsCatalog(assetsCatalog);
 
-        overallSummary.append(OVERALL_WALLET_SUMMARY).append(System.lineSeparator());
+        Map<Asset, Double> assetProfits = new HashMap<>();
 
-        for (var entry : assetProfits.entrySet()) {
-            overallSummary.append(ASSET)
-                    .append(entry.getKey().getName())
-                    .append(", ");
-
-            double diff = entry.getValue();
-
-            if (diff > 0.0) {
-                overallSummary.append(PROFIT).append(diff + DEFAULT_CURRENCY);
-            } else if (diff < 0.0) {
-                overallSummary.append(LOSS).append(diff + DEFAULT_CURRENCY);
-            } else {
-                overallSummary.append(NO_PROFIT_OR_LOSS);
+        for (var entry : ownedAssets.entrySet()) {
+            Asset asset = assetsCatalog.findById(entry.getKey().getAssetId());
+            if (asset == null) {
+                continue;
             }
-            overallSummary.append(System.lineSeparator());
+
+            double currentPrice = asset.getPrice();
+            double amountOwned = entry.getValue();
+            double totalSpent = buyHistory.get(asset).stream()
+                    .mapToDouble(Double::doubleValue)
+                    .sum();
+
+            double currentValue = amountOwned * currentPrice;
+            double profit = currentValue - totalSpent;
+
+            assetProfits.put(asset, profit);
         }
 
-        return overallSummary.toString();
+        return new OverallWalletSummary(assetProfits);
     }
 
     private void validateAssetId(String assetId) {
