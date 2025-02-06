@@ -51,6 +51,9 @@ public class AssetRequestClient {
 
     private void checkStatusCode(HttpResponse<String> response) throws ApiRequestException {
         int statusCode = response.statusCode();
+        if (statusCode == HttpURLConnection.HTTP_OK) {
+            return;
+        }
         String errorMessage
                 = "API request failed with status code: " + statusCode + " and response: " + response.body();
 
@@ -59,6 +62,7 @@ public class AssetRequestClient {
             case HttpURLConnection.HTTP_UNAUTHORIZED -> throw new ApiRequestException("Unauthorized: " + errorMessage);
             case HttpURLConnection.HTTP_FORBIDDEN -> throw new ApiRequestException("Forbidden: " + errorMessage);
             case HTTP_TOO_MANY_REQUESTS -> throw new ApiRequestException("Too many requests: " + errorMessage);
+            default -> throw new ApiRequestException("Unexpected status code: " + errorMessage);
         }
     }
 }

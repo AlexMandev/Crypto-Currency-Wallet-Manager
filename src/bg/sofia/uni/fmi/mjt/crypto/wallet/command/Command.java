@@ -4,7 +4,7 @@ import java.nio.channels.SelectionKey;
 
 public abstract class Command {
     protected static final String HELP_MESSAGE = "Enter help in the console, if you want to see all commands.";
-    protected static final String NOT_LOGGED_IN_MESSAGE = "You are not logged in. Please register or login first.";
+    public static final String NOT_LOGGED_IN_MESSAGE = "You are not logged in. Please register or login first.";
     protected final String[] arguments;
     protected final SelectionKey selectionKey;
 
