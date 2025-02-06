@@ -49,7 +49,7 @@ public class CommandFactory {
             case LOGOUT_COMMAND -> new LogoutCommand(arguments, key);
             case SELL_COMMAND -> new SellCommand(arguments, key, assetsCatalog);
             case WALLET_SUMMARY_COMMAND -> new WalletSummaryCommand(arguments, key);
-            case WALLET_OVERALL_SUMMARY_COMMAND -> new WalletOverallSummaryCommand(arguments, key);
+            case WALLET_OVERALL_SUMMARY_COMMAND -> new WalletOverallSummaryCommand(arguments, key, assetsCatalog);
             default -> throw new UnknownCommandException(UNKNOWN_COMMAND_MESSAGE);
         };
     }
