@@ -1,6 +1,9 @@
 package bg.sofia.uni.fmi.mjt.crypto.wallet.coin.api;
 
+import bg.sofia.uni.fmi.mjt.crypto.wallet.exception.ApiRequestException;
+
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -16,6 +19,8 @@ public class AssetRequestClient {
 
     private static final String API_KEY_PARAM_STRING = "APIKEY-";
 
+    private static final int HTTP_TOO_MANY_REQUESTS = 429;
+
     private final HttpClient httpClient;
     private final String apiKey;
 
@@ -24,8 +29,7 @@ public class AssetRequestClient {
         this.apiKey = apiKey;
     }
 
-    // TO DO LATER : log errors
-    public HttpResponse<String> getAllAssets() {
+    public HttpResponse<String> getAllAssets() throws ApiRequestException {
         HttpResponse<String> apiResponse;
 
         try {
@@ -33,37 +37,28 @@ public class AssetRequestClient {
                     ENDPOINT_PATH + API_KEY_PARAM_STRING + apiKey, null);
             HttpRequest request = HttpRequest.newBuilder().uri(uri).build();
             apiResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            checkStatusCode(apiResponse);
         } catch (URISyntaxException e) {
-            throw new RuntimeException("Couldn't send http request. URI is invalid." , e);
+            throw new ApiRequestException("Couldn't send http request. URI is invalid.", e);
         } catch (IOException e) {
-            throw new RuntimeException("Error occurred while sending http request.", e);
+            throw new ApiRequestException("Error occurred while sending http request.", e);
         } catch (InterruptedException e) {
-            throw new RuntimeException("A problem with the connection occurred while sending http request", e);
+            throw new ApiRequestException("A problem with the connection occurred while sending http request", e);
         }
 
         return apiResponse;
     }
 
-    public HttpResponse<String> getAssetById(String assetId) {
-        if (assetId == null || assetId.isEmpty() || assetId.isBlank()) {
-            throw new IllegalArgumentException("assetId cannot be null, empty or blank.");
-        }
-        HttpResponse<String> apiResponse;
+    private void checkStatusCode(HttpResponse<String> response) throws ApiRequestException {
+        int statusCode = response.statusCode();
+        String errorMessage
+                = "API request failed with status code: " + statusCode + " and response: " + response.body();
 
-        try {
-            URI uri = new URI(ENDPOINT_SCHEME, ENDPOINT_HOST,
-                    ENDPOINT_PATH + assetId + PATH_DELIMITER + API_KEY_PARAM_STRING + apiKey, null);
-            HttpRequest request = HttpRequest.newBuilder().uri(uri).build();
-            apiResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException("Couldn't send http request. URI is invalid." , e);
-        } catch (IOException e) {
-            throw new RuntimeException("Error occurred while sending http request.", e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException("A problem with the connection occurred while sending http request", e);
+        switch (statusCode) {
+            case HttpURLConnection.HTTP_BAD_REQUEST -> throw new ApiRequestException("Bad Request: " + errorMessage);
+            case HttpURLConnection.HTTP_UNAUTHORIZED -> throw new ApiRequestException("Unauthorized: " + errorMessage);
+            case HttpURLConnection.HTTP_FORBIDDEN -> throw new ApiRequestException("Forbidden: " + errorMessage);
+            case HTTP_TOO_MANY_REQUESTS -> throw new ApiRequestException("Too many requests: " + errorMessage);
         }
-
-        return apiResponse;
     }
-
 }
