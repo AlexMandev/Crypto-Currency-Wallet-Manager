@@ -5,7 +5,7 @@ public class UserAlreadyExistsException extends Exception {
         super(message);
     }
 
-    public UserAlreadyExistsException(String message, Exception e) {
-        super(message, e);
+    public UserAlreadyExistsException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

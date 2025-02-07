@@ -5,7 +5,7 @@ public class UnknownCommandException extends Exception {
         super(message);
     }
 
-    public UnknownCommandException(String message, Exception e) {
-        super(message, e);
+    public UnknownCommandException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

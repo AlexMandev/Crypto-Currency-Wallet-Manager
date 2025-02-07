@@ -5,7 +5,7 @@ public class UnavailableAssetException extends Exception {
         super(message);
     }
 
-    public UnavailableAssetException(String message, Exception e) {
-        super(message, e);
+    public UnavailableAssetException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

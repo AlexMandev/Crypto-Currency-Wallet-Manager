@@ -5,7 +5,7 @@ public class CommandArgumentCountException extends RuntimeException {
         super(message);
     }
 
-    public CommandArgumentCountException(String message, Exception e) {
-        super(message, e);
+    public CommandArgumentCountException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

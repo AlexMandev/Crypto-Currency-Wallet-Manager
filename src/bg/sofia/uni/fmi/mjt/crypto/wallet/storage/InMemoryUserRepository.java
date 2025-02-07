@@ -79,4 +79,9 @@ public class InMemoryUserRepository implements UserRepository {
     public Map<String, User> getUsers() {
         return Collections.unmodifiableMap(users);
     }
+
+    @Override
+    public void close() {
+        // save to some path
+    }
 }

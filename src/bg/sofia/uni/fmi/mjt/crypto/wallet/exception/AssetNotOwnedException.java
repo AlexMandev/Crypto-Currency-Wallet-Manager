@@ -5,7 +5,7 @@ public class AssetNotOwnedException extends Exception {
         super(message);
     }
 
-    public AssetNotOwnedException(String message, Exception e) {
-        super(message, e);
+    public AssetNotOwnedException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

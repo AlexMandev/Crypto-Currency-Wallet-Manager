@@ -5,7 +5,7 @@ public class InsufficientBalanceException extends Exception {
         super(message);
     }
 
-    public InsufficientBalanceException(String message, Exception e) {
-        super(message, e);
+    public InsufficientBalanceException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

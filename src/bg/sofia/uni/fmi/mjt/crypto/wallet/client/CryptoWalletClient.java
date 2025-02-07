@@ -35,7 +35,12 @@ public class CryptoWalletClient {
                 System.out.print(COMMAND_PREFIX);
                 String command = scanner.nextLine();
 
-                handleCommand(clientSocketChannel, command);
+                if (command == null || command.isEmpty() || command.isBlank()) {
+                    System.out.println(INVALID_COMMAND);
+                    continue;
+                }
+
+                sendMessageToServer(clientSocketChannel, command);
 
                 String serverResponse = getServerResponse(clientSocketChannel);
                 System.out.println(serverResponse);
@@ -47,10 +52,6 @@ public class CryptoWalletClient {
     }
 
     private void handleCommand(SocketChannel client, String command) throws IOException {
-        if (command == null || command.isEmpty() || command.isBlank()) {
-            System.out.println(INVALID_COMMAND);
-            return;
-        }
         sendMessageToServer(client, command);
     }
 

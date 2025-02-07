@@ -5,7 +5,7 @@ public class InvalidCommandArgumentException extends RuntimeException {
         super(message);
     }
 
-    public InvalidCommandArgumentException(String message, Exception e) {
-        super(message, e);
+    public InvalidCommandArgumentException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

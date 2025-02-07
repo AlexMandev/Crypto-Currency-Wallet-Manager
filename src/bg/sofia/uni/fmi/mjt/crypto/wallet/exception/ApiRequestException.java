@@ -5,7 +5,7 @@ public class ApiRequestException extends Exception {
         super(message);
     }
 
-    public ApiRequestException(String message, Exception e) {
-        super(message, e);
+    public ApiRequestException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

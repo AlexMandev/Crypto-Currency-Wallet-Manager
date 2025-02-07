@@ -6,7 +6,7 @@ import bg.sofia.uni.fmi.mjt.crypto.wallet.user.User;
 import java.nio.file.Path;
 import java.util.Map;
 
-public interface UserRepository {
+public interface UserRepository extends AutoCloseable {
 
     void addUser(User user) throws UserAlreadyExistsException;
 
