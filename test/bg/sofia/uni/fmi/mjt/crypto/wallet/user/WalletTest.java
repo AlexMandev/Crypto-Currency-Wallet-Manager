@@ -45,7 +45,8 @@ class WalletTest {
     @Test
     void testDepositIncreasesBalance() {
         wallet.deposit(1000.0);
-        assertEquals(1000.0, wallet.getBalance(), "Balance should be updated after deposit.");
+        assertEquals(1000.0, wallet.getBalance(),
+                "Balance should be updated after deposit.");
     }
 
     @Test
@@ -127,5 +128,26 @@ class WalletTest {
         OverallWalletSummary summary = wallet.getOverallSummary(assetsCatalog);
         assertTrue(summary.assetProfits().isEmpty(),
                 "Buy history should be removed after selling.");
+    }
+
+    @Test
+    void testWithdrawInsufficientBalance() {
+        assertThrows(InsufficientBalanceException.class,
+                () -> wallet.withdraw(100.00),
+                "Should throw if balance is insufficient.");
+    }
+
+    @Test
+    void testWithdrawInvalidAmount() {
+        assertThrows(IllegalArgumentException.class,
+                () -> wallet.withdraw(-100.00),
+                "Should throw if dollar amount is invalid.");
+    }
+
+    void testWithdraw() throws InsufficientBalanceException {
+        wallet.deposit(100.00);
+        wallet.withdraw(50.00);
+        assertEquals(50.00, wallet.getBalance(),
+                "Balance should be updated after withdrawing.");
     }
 }

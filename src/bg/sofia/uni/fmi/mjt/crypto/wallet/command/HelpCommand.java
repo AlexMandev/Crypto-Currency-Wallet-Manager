@@ -27,6 +27,7 @@ public class HelpCommand extends Command {
                 "register <username> <password>" + System.lineSeparator() +
                 "logout <username> <password>" + System.lineSeparator() +
                 "deposit <amount>" + System.lineSeparator() +
+                "widthdraw <amount>" + System.lineSeparator() +
                 "list-offerings" + System.lineSeparator() +
                 "buy <asset_id> <amount>" + System.lineSeparator() +
                 "sell <asset_id>" + System.lineSeparator() +
