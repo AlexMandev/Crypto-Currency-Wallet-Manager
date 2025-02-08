@@ -3,30 +3,35 @@ package bg.sofia.uni.fmi.mjt.crypto.wallet.storage;
 import bg.sofia.uni.fmi.mjt.crypto.wallet.exception.UserAlreadyExistsException;
 import bg.sofia.uni.fmi.mjt.crypto.wallet.user.User;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public class InMemoryUserRepository implements UserRepository {
 
+    public static final String FILE_PATH = "data" + File.separator + "users.dat";
     private Map<String, User> users;
 
     public InMemoryUserRepository() {
         this.users = new HashMap<>();
     }
 
-    public InMemoryUserRepository(Path path) {
-        load(path);
+    InMemoryUserRepository(Map<String, User> users) {
+        this.users = users;
     }
 
     @Override
     public void addUser(User user) throws UserAlreadyExistsException {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null.");
+        }
         if (users.containsKey(user.getUsername())) {
             throw new UserAlreadyExistsException("User with username " + user.getUsername() + " already exists.");
         }
@@ -34,18 +39,9 @@ public class InMemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public void load(Path path) {
-        if (path == null) {
-            throw new IllegalArgumentException("Path cannot be null.");
-        }
-        if (!Files.isRegularFile(path)) {
-            throw new IllegalArgumentException("Path should be a valid file.");
-        }
-
-        try (ObjectInputStream usersStream = new ObjectInputStream(Files.newInputStream(path))) {
-            Map<String, User> loadedUsers = (HashMap<String, User>) usersStream.readObject();
-            users.clear();
-            users.putAll(loadedUsers);
+    public void load() {
+        try (ObjectInputStream usersStream = new ObjectInputStream(new FileInputStream(FILE_PATH))) {
+            users = (Map<String, User>) usersStream.readObject();
         } catch (IOException e) {
             throw new UncheckedIOException("Error occurred when loading users from file.", e);
         } catch (ClassNotFoundException e) {
@@ -54,16 +50,8 @@ public class InMemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public void save(Path path) {
-        if (path == null) {
-            throw new IllegalArgumentException("Path cannot be null.");
-        }
-        if (!Files.isRegularFile(path)) {
-            throw new IllegalArgumentException("Path should be a valid file.");
-        }
-
-        try (ObjectOutputStream usersStream
-                     = new ObjectOutputStream(Files.newOutputStream(path))) {
+    public void save() {
+        try (ObjectOutputStream usersStream = new ObjectOutputStream(new FileOutputStream(FILE_PATH))) {
             usersStream.writeObject(users);
         } catch (IOException e) {
             throw new UncheckedIOException("Error occurred when saving users to file.", e);
@@ -82,6 +70,6 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public void close() {
-        // save to some path
+        save();
     }
 }

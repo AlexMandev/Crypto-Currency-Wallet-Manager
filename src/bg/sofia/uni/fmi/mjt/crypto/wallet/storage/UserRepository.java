@@ -10,9 +10,9 @@ public interface UserRepository extends AutoCloseable {
 
     void addUser(User user) throws UserAlreadyExistsException;
 
-    void load(Path path);
+    void load();
 
-    void save(Path path);
+    void save();
 
     User getUser(String username);
 

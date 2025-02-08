@@ -10,6 +10,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AssetsCatalogTest {
 
@@ -58,5 +59,15 @@ class AssetsCatalogTest {
     void testUpdateCatalogThrowsForNull() {
         assertThrows(IllegalArgumentException.class, () -> assetsCatalog.updateCatalog(null),
                 "UpdateCatalog should throw for null assets list.");
+    }
+
+    @Test
+    void testToString() {
+        assetsCatalog.updateCatalog(List.of(btcAsset));
+
+        String print = assetsCatalog.toString();
+
+        assertTrue(print.contains(btcAsset.getAssetId()),
+                "Should mention the assets in the catalog.");
     }
 }
