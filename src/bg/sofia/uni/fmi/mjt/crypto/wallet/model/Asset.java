@@ -16,6 +16,15 @@ public class Asset {
     private final int isCrypto;
 
     public Asset(String assetId, String name, double price, int isCrypto) {
+        if (assetId == null || assetId.isEmpty() || assetId.isBlank()) {
+            throw new IllegalArgumentException("AssetId cannot be null, empty or blank.");
+        }
+        if (name == null || name.isEmpty() || name.isBlank()) {
+            throw new IllegalArgumentException("Name cannot be null, empty or blank.");
+        }
+        if (price < 0.0) {
+            throw new IllegalArgumentException("Asset price cannot be negative.");
+        }
         this.assetId = assetId;
         this.name = name;
         this.price = price;

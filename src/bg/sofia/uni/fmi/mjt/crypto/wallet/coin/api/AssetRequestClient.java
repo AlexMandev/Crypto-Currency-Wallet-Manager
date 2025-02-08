@@ -15,7 +15,6 @@ public class AssetRequestClient {
     private static final String ENDPOINT_SCHEME = "https";
     private static final String ENDPOINT_HOST = "rest.coinapi.io";
     private static final String ENDPOINT_PATH = "/v1/assets/";
-    private static final String PATH_DELIMITER = "/";
 
     private static final String API_KEY_PARAM_STRING = "APIKEY-";
 

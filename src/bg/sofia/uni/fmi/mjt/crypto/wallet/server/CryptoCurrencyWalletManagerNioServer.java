@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CryptoCurrencyWalletManagerNioServer {
     private static final int BUFFER_SIZE = 8192;
@@ -34,7 +35,7 @@ public class CryptoCurrencyWalletManagerNioServer {
     private Selector selector;
     private final CommandFactory commandFactory;
     private final CryptoAssetUpdaterRunnable cryptoAssetUpdaterRunnable;
-    private boolean isRunning = false;
+    private AtomicBoolean isRunning;
 
     public CryptoCurrencyWalletManagerNioServer(int port, CommandFactory commandFactory,
                                                 CryptoAssetUpdaterRunnable cryptoAssetUpdaterRunnable) {
@@ -51,7 +52,7 @@ public class CryptoCurrencyWalletManagerNioServer {
             selector = Selector.open();
             buffer = ByteBuffer.allocate(BUFFER_SIZE);
             configureServerSocketChannel(server, selector);
-            isRunning = true;
+            isRunning.set(true);
             selectKeys();
         } catch (IOException e) {
             Logs.logError("An IOException occurred while starting the server.", e);
@@ -61,7 +62,7 @@ public class CryptoCurrencyWalletManagerNioServer {
     }
 
     public void stop() {
-        this.isRunning = false;
+        this.isRunning.set(false);
         if (selector.isOpen()) {
             selector.wakeup();
         }
@@ -74,7 +75,7 @@ public class CryptoCurrencyWalletManagerNioServer {
     }
 
     private void selectKeys() {
-        while (isRunning) {
+        while (isRunning.get()) {
             try {
                 int readyChannels = selector.select();
                 if (readyChannels < 0) {
