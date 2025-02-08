@@ -40,8 +40,18 @@ public class Wallet implements Serializable {
         balance += amount;
     }
 
+    public void withdraw(double amount) throws InsufficientBalanceException {
+        if (amount < INITIAL_BALANCE) {
+            throw new IllegalArgumentException("Withdraw amount cannot be negative.");
+        }
+        if (amount > balance) {
+            throw new InsufficientBalanceException("Insufficient funds. Please check your wallet's balance.");
+        }
+        balance -= amount;
+    }
+
     public void buy(String assetId, double dollarAmount, AssetsCatalog currentAssetsCatalog)
-        throws InsufficientBalanceException, UnavailableAssetException {
+            throws InsufficientBalanceException, UnavailableAssetException {
         validateAssetId(assetId);
         validateAssetsCatalog(currentAssetsCatalog);
         if (dollarAmount <= INITIAL_BALANCE) {
