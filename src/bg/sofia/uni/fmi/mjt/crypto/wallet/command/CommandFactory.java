@@ -20,11 +20,18 @@ public class CommandFactory {
     private static final String SELL_COMMAND = "sell";
     private static final String WALLET_SUMMARY_COMMAND = "get-wallet-summary";
     private static final String WALLET_OVERALL_SUMMARY_COMMAND = "get-wallet-overall-summary";
+    private static final String WITHDRAW_COMMAND = "withdraw";
 
     private final UserRepository users;
     private final AssetsCatalog assetsCatalog;
 
     public CommandFactory(UserRepository userRepository, AssetsCatalog assetsCatalog) {
+        if (userRepository == null) {
+            throw new IllegalArgumentException("userRepository cannot be null.");
+        }
+        if (assetsCatalog == null) {
+            throw new IllegalArgumentException("AssetsCatalog cannot be null.");
+        }
         this.users = userRepository;
         this.assetsCatalog = assetsCatalog;
     }
@@ -50,6 +57,7 @@ public class CommandFactory {
             case SELL_COMMAND -> new SellCommand(arguments, key, assetsCatalog);
             case WALLET_SUMMARY_COMMAND -> new WalletSummaryCommand(arguments, key);
             case WALLET_OVERALL_SUMMARY_COMMAND -> new WalletOverallSummaryCommand(arguments, key, assetsCatalog);
+            case WITHDRAW_COMMAND -> new WithdrawCommand(arguments, key);
             default -> throw new UnknownCommandException(UNKNOWN_COMMAND_MESSAGE);
         };
     }

@@ -24,6 +24,12 @@ public class AssetRequestClient {
     private final String apiKey;
 
     public AssetRequestClient(HttpClient httpClient, String apiKey) {
+        if (httpClient == null) {
+            throw new IllegalArgumentException("httpClient cannot be null.");
+        }
+        if (apiKey == null || apiKey.isEmpty() || apiKey.isBlank()) {
+            throw new IllegalArgumentException("apiKey cannot be empty, null or blank.");
+        }
         this.httpClient = httpClient;
         this.apiKey = apiKey;
     }

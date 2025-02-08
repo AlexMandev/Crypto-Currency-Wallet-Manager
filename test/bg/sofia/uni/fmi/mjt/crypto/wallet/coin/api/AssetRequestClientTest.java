@@ -2,6 +2,7 @@ package bg.sofia.uni.fmi.mjt.crypto.wallet.coin.api;
 
 import bg.sofia.uni.fmi.mjt.crypto.wallet.exception.ApiRequestException;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -26,8 +27,12 @@ public class AssetRequestClientTest {
     static void setUp() throws IOException, InterruptedException {
         httpClientMock = mock();
         httpResponseMock = mock();
-        when(httpClientMock.send(any(), any(HttpResponse.BodyHandler.class))).thenReturn(httpResponseMock);
         client = new AssetRequestClient(httpClientMock, "key");
+    }
+
+    @BeforeEach
+    void setUpEach() throws IOException, InterruptedException {
+        when(httpClientMock.send(any(), any(HttpResponse.BodyHandler.class))).thenReturn(httpResponseMock);
     }
 
     @Test
@@ -70,5 +75,39 @@ public class AssetRequestClientTest {
         when(httpResponseMock.statusCode()).thenReturn(HttpURLConnection.HTTP_OK);
         assertSame(client.getAllAssets(), httpResponseMock,
                 "Should return the same response returned by the HttpClient.");
+    }
+
+    @Test
+    void testGetAllAssetsIOException() throws IOException, InterruptedException {
+        when(httpClientMock.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenThrow(new IOException("Simulated IOException"));
+
+        assertThrows(ApiRequestException.class,
+                () -> client.getAllAssets(),
+                "Should throw ApiRequestException when IOException occurs.");
+    }
+
+    @Test
+    void testGetAllAssetsInterruptedException() throws IOException, InterruptedException {
+        when(httpClientMock.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenThrow(new InterruptedException("Simulated InterruptedException"));
+
+        assertThrows(ApiRequestException.class,
+                () -> client.getAllAssets(),
+                "Should throw ApiRequestException when InterruptedException occurs.");
+    }
+
+    @Test
+    void testNullHttpClient() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new AssetRequestClient(null, "key"),
+                "Should throw IllegalArgumentException when httpClient is null.");
+    }
+
+    @Test
+    void testNullApiKey() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new AssetRequestClient(httpClientMock, null),
+                "Should throw IllegalArgumentException when apiKey is null.");
     }
 }

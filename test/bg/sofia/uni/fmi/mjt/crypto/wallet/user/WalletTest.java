@@ -56,6 +56,28 @@ class WalletTest {
     }
 
     @Test
+    void testSellUnavailableAsset() {
+        when(assetsCatalog.findById("AssetId")).thenReturn(null);
+        assertThrows(UnavailableAssetException.class,
+                () -> wallet.sell("AssetId", assetsCatalog),
+                "Should throw if asset is unavailable.");
+    }
+
+    @Test
+    void testBuyNullCatalog() {
+        assertThrows(IllegalArgumentException.class,
+                () -> wallet.buy("id", 10.0, null),
+                "Should throw if assetsCatalog is null.");
+    }
+
+    @Test
+    void testBuyNullAssetId() {
+        assertThrows(IllegalArgumentException.class,
+                () -> wallet.buy(null, 10.0, assetsCatalog),
+                "Should throw if assetId is null.");
+    }
+
+    @Test
     void testBuyAssetSuccessfully() throws InsufficientBalanceException, UnavailableAssetException {
         wallet.deposit(1000.00);
         wallet.buy(BTC_ID, 500.00, assetsCatalog);
@@ -144,6 +166,7 @@ class WalletTest {
                 "Should throw if dollar amount is invalid.");
     }
 
+    @Test
     void testWithdraw() throws InsufficientBalanceException {
         wallet.deposit(100.00);
         wallet.withdraw(50.00);
