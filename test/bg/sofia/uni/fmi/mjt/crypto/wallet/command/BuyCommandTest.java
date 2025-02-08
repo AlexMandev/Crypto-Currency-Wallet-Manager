@@ -11,8 +11,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.nio.channels.SelectionKey;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -70,4 +72,44 @@ class BuyCommandTest {
                 "Should throw for more arguments.");
     }
 
+    @Test
+    void testUserNotLoggedIn() {
+        when(selectionKey.attachment()).thenReturn(null);
+
+        String[] arguments = {"assetId", "100"};
+        buyCommand = new BuyCommand(arguments, selectionKey, assetsCatalog);
+
+        String result = buyCommand.execute();
+
+        assertEquals(Command.NOT_LOGGED_IN_MESSAGE, result,
+                "Should return 'Not logged in' message when user is not logged.");
+    }
+
+    @Test
+    void testInsufficientBalance() throws InsufficientBalanceException, UnavailableAssetException {
+        doThrow(new InsufficientBalanceException("Insufficient balance")).when(wallet)
+                .buy("assetId", 100, assetsCatalog);
+
+        String[] arguments = {"assetId", "100"};
+        buyCommand = new BuyCommand(arguments, selectionKey, assetsCatalog);
+
+        String result = buyCommand.execute();
+
+        assertTrue(result.contains("Insufficient balance to complete the purchase."),
+                "Should return an error message for insufficient balance.");
+    }
+
+    @Test
+    void testUnavailableAsset() throws InsufficientBalanceException, UnavailableAssetException {
+        doThrow(new UnavailableAssetException("Asset unavailable")).when(wallet)
+                .buy("assetId", 100, assetsCatalog);
+
+        String[] arguments = {"assetId", "100"};
+        buyCommand = new BuyCommand(arguments, selectionKey, assetsCatalog);
+
+        String result = buyCommand.execute();
+
+        assertTrue(result.contains("The asset with the given ID is unavailable."),
+                "Should return an error message for unavailable asset.");
+    }
 }

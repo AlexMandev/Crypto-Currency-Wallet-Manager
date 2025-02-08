@@ -49,6 +49,13 @@ public class CommandFactoryTest {
     }
 
     @Test
+    void testNullInputLine() {
+        assertThrows(IllegalArgumentException.class,
+                () -> commandFactory.of(null, selectionKeyMock),
+                "Should throw for null input.");
+    }
+
+    @Test
     void testOfReturnsHelpCommand() throws UnknownCommandException {
         assertInstanceOf(HelpCommand.class,
                 commandFactory.of("help", selectionKeyMock),
