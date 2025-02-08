@@ -22,6 +22,7 @@ public class AssetsCatalog {
         }
         newAssets.stream()
                 .filter(Asset::isCrypto)
+                .filter(asset -> asset.getPrice() != 0.0)
                 .limit(MAX_ASSETS)
                 .forEach(asset -> assetsMap.put(asset.getAssetId(), asset));
     }

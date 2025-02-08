@@ -17,22 +17,12 @@ import java.util.Map;
 public class Wallet implements Serializable {
     @Serial
     private static final long serialVersionUID = -7459989033155017236L;
-
-    private static final String BALANCE = "Balance: ";
-    private static final String WALLET_SUMMARY = "Wallet Summary:";
-    private static final String OVERALL_WALLET_SUMMARY = "Overall Wallet Summary:";
-    private static final String ASSET = "Asset: ";
-    private static final String AMOUNT = ", Amount: ";
-    private static final String PROFIT = "Profit: ";
-    private static final String LOSS = "Loss: ";
-    private static final String NO_PROFIT_OR_LOSS = "No Profit/Loss from this asset";
-    private static final char DEFAULT_CURRENCY = '$';
-
     private static final double INITIAL_BALANCE = 0.0;
+    private static final double DELTA = 0.01;
 
     private double balance;
     private final Map<Asset, Double> ownedAssets;
-    private final Map<Asset, List<Double>> buyHistory;
+    private final Map<Asset, Double> buyHistory;
 
     public Wallet() {
         this.balance = INITIAL_BALANCE;
@@ -71,8 +61,7 @@ public class Wallet implements Serializable {
         double amountBought = dollarAmount / asset.getPrice();
         balance -= dollarAmount;
         ownedAssets.put(asset, ownedAssets.getOrDefault(asset, 0.0) + amountBought);
-        buyHistory.putIfAbsent(asset, new ArrayList<>());
-        buyHistory.get(asset).add(dollarAmount);
+        buyHistory.put(asset, buyHistory.getOrDefault(asset, 0.0) + dollarAmount);
     }
 
     public void sell(String assetId, AssetsCatalog currentAssetsCatalog)
@@ -114,14 +103,16 @@ public class Wallet implements Serializable {
 
             double currentPrice = asset.getPrice();
             double amountOwned = entry.getValue();
-            double totalSpent = buyHistory.get(asset).stream()
-                    .mapToDouble(Double::doubleValue)
-                    .sum();
+            double totalSpent = buyHistory.get(asset);
 
             double currentValue = amountOwned * currentPrice;
-            double profit = currentValue - totalSpent;
+            double profitOrLoss = currentValue - totalSpent;
 
-            assetProfits.put(asset, profit);
+            if (Math.abs(profitOrLoss) < DELTA) {
+                profitOrLoss = 0.0;
+            }
+
+            assetProfits.put(asset, profitOrLoss);
         }
 
         return new OverallWalletSummary(assetProfits);

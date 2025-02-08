@@ -44,8 +44,6 @@ public class BuyCommand extends Command {
             return INSUFFICIENT_BALANCE_MESSAGE;
         } catch (UnavailableAssetException e) {
             return UNAVAILABLE_ASSET_MESSAGE;
-        } catch (Exception e) {
-            //log error
         }
 
         return SUCCESSFUL_PURCHASE_MESSAGE + " " + REMAINING_BALANCE + user.getWallet().getBalance();

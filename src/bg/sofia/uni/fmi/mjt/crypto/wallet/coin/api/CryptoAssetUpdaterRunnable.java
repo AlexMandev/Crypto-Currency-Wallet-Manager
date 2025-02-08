@@ -1,6 +1,7 @@
 package bg.sofia.uni.fmi.mjt.crypto.wallet.coin.api;
 
 import bg.sofia.uni.fmi.mjt.crypto.wallet.exception.ApiRequestException;
+import bg.sofia.uni.fmi.mjt.crypto.wallet.logs.Logs;
 import bg.sofia.uni.fmi.mjt.crypto.wallet.model.Asset;
 import bg.sofia.uni.fmi.mjt.crypto.wallet.storage.AssetsCatalog;
 import com.google.gson.Gson;
@@ -33,7 +34,7 @@ public class CryptoAssetUpdaterRunnable implements Runnable {
                 catalogToUpdate.updateCatalog(GSON.fromJson(apiResponse.body(), bodyType));
             }
         } catch (ApiRequestException e) {
-            // log error
+            Logs.logError("An error occurred while updating assets.", e);
         }
 
     }

@@ -39,6 +39,10 @@ public class CryptoWalletClient {
                     System.out.println(INVALID_COMMAND);
                     continue;
                 }
+                if (command.equals(EXIT_MESSAGE)) {
+                    clientSocketChannel.close();
+                    break;
+                }
 
                 sendMessageToServer(clientSocketChannel, command);
 
@@ -69,5 +73,10 @@ public class CryptoWalletClient {
         byte[] messageBytes = new byte[buffer.remaining()];
         buffer.get(messageBytes);
         return new String(messageBytes, StandardCharsets.UTF_8);
+    }
+
+    public static void main(String[] args) {
+        CryptoWalletClient client = new CryptoWalletClient("localhost", 10001);
+        client.start();
     }
 }

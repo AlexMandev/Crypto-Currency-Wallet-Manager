@@ -50,4 +50,12 @@ public class Asset {
     public int hashCode() {
         return Objects.hashCode(assetId);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(assetId).append(", ").append(name).append(", ").append("Price: ")
+                .append(price).append("$");
+        return builder.toString();
+    }
 }

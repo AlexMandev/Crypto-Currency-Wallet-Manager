@@ -40,15 +40,18 @@ class AssetsCatalogTest {
 
         assetsCatalog.updateCatalog(List.of(btcAsset, stock));
 
-        assertEquals(btcAsset, assetsCatalog.findById(BTC_ID), "BTC should be in the catalog.");
-        assertNull(assetsCatalog.findById("MSFT"), "Non-crypto assets should not be added.");
+        assertEquals(btcAsset, assetsCatalog.findById(BTC_ID),
+                "BTC should be in the catalog.");
+        assertNull(assetsCatalog.findById("MSFT"),
+                "Non-crypto assets should not be added.");
     }
 
     @Test
     void testFindByIdReturnsNullForNonExistentAsset() {
         assetsCatalog.updateCatalog(List.of(btcAsset, ethAsset));
 
-        assertNull(assetsCatalog.findById(NON_EXISTENT_ID), "Should return null for non-existent asset.");
+        assertNull(assetsCatalog.findById(NON_EXISTENT_ID),
+                "Should return null for non-existent asset.");
     }
 
     @Test
