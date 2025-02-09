@@ -2,9 +2,14 @@ package bg.sofia.uni.fmi.mjt.crypto.wallet.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Asset {
+public class Asset implements Serializable {
+    @Serial
+    private static final long serialVersionUID = -7135364178149372020L;
+
     private static final int TYPE_IS_CRYPTO_VALUE = 1;
 
     @SerializedName("asset_id")

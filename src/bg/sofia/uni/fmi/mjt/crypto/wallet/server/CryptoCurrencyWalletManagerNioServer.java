@@ -23,6 +23,7 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -54,13 +55,15 @@ public class CryptoCurrencyWalletManagerNioServer {
 
     public void start() {
         try (ServerSocketChannel server = ServerSocketChannel.open();
-             ScheduledExecutorService cryptoAssetService = Executors.newSingleThreadScheduledExecutor()) {
+             ScheduledExecutorService cryptoAssetService = Executors.newSingleThreadScheduledExecutor();
+             ExecutorService stopper = Executors.newSingleThreadExecutor()) {
             cryptoAssetService.scheduleAtFixedRate(cryptoAssetUpdaterRunnable, INITIAL_DELAY,
                     MINUTES_BETWEEN_API_CALLS, TimeUnit.MINUTES);
             selector = Selector.open();
             buffer = ByteBuffer.allocate(BUFFER_SIZE);
             configureServerSocketChannel(server, selector);
             isRunning.set(true);
+            stopper.submit(new ServerStopRunnable(this));
             selectKeys();
         } catch (IOException e) {
             Logs.logError("An IOException occurred while starting the server.", e);
@@ -184,7 +187,7 @@ public class CryptoCurrencyWalletManagerNioServer {
                     new CryptoCurrencyWalletManagerNioServer(DEFAULT_PORT, commandFactory, runnable);
             server.start();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            Logs.logError("Unknown error occurred in the server program.", e);
         }
     }
 }
