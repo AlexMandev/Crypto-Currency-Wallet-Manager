@@ -34,7 +34,7 @@ public class CryptoAssetUpdaterRunnable implements Runnable {
                 catalogToUpdate.updateCatalog(GSON.fromJson(apiResponse.body(), bodyType));
             }
         } catch (ApiRequestException e) {
-            Logs.logError("An error occurred while updating assets.", e);
+            Logs.logError("An error occurred: couldn't update assets.", e);
         }
 
     }

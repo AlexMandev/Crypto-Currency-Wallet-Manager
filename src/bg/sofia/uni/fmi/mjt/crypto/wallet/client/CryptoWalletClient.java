@@ -10,7 +10,7 @@ import java.util.Scanner;
 public class CryptoWalletClient {
     private static final int PORT = 10001;
     private static final int BUFFER_SIZE = 8192;
-    private static final String EXIT_MESSAGE = "disconnect";
+    private static final String EXIT_MESSAGE = "quit";
     private static final String WELCOME_MESSAGE = "Welcome to the CryptoWalletManager. " +
             "You can type help for a list of commands.";
     private static final String COMMAND_PREFIX = "$";
