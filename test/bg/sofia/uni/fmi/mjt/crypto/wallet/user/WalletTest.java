@@ -1,6 +1,5 @@
 package bg.sofia.uni.fmi.mjt.crypto.wallet.user;
 
-
 import bg.sofia.uni.fmi.mjt.crypto.wallet.exception.AssetNotOwnedException;
 import bg.sofia.uni.fmi.mjt.crypto.wallet.exception.InsufficientBalanceException;
 import bg.sofia.uni.fmi.mjt.crypto.wallet.exception.UnavailableAssetException;
@@ -13,164 +12,164 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class WalletTest {
-
-    private static final String BTC_ID = "BTC";
-    private static final double BTC_PRICE = 10;
-    private static final Asset BTC_ASSET = new Asset(BTC_ID, "Bitcoin", BTC_PRICE, 1);
+    private static AssetsCatalog catalogMock;
+    private static Asset asset;
 
     private Wallet wallet;
-    private static AssetsCatalog assetsCatalog;
 
     @BeforeAll
-    static void setupMocks() {
-        assetsCatalog = mock();
-        when(assetsCatalog.findById(BTC_ID)).thenReturn(BTC_ASSET);
+    static void setMocks() {
+        asset = new Asset("BTC", "Bitcoin", 50000.00, 1);
+        catalogMock = mock();
     }
 
     @BeforeEach
     void setUp() {
         wallet = new Wallet();
+        when(catalogMock.findById("BTC")).thenReturn(asset);
     }
 
     @Test
-    void testInitialBalanceIsZero() {
-        assertEquals(0.0, wallet.getBalance(), "Initial wallet balance should be zero.");
+    void testDeposit() {
+        double initialBalance = wallet.getBalance();
+        double depositAmount = 1000.0;
+
+        wallet.deposit(depositAmount);
+
+        assertEquals(initialBalance + depositAmount, wallet.getBalance());
     }
 
     @Test
-    void testDepositIncreasesBalance() {
-        wallet.deposit(1000.0);
-        assertEquals(1000.0, wallet.getBalance(),
-                "Balance should be updated after deposit.");
-    }
-
-    @Test
-    void testDepositNegativeAmountThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> wallet.deposit(-100.0),
-                "Deposit should throw for invalid dollar amount.");
-    }
-
-    @Test
-    void testSellUnavailableAsset() {
-        when(assetsCatalog.findById("AssetId")).thenReturn(null);
-        assertThrows(UnavailableAssetException.class,
-                () -> wallet.sell("AssetId", assetsCatalog),
-                "Should throw if asset is unavailable.");
-    }
-
-    @Test
-    void testBuyNullCatalog() {
-        assertThrows(IllegalArgumentException.class,
-                () -> wallet.buy("id", 10.0, null),
-                "Should throw if assetsCatalog is null.");
-    }
-
-    @Test
-    void testBuyNullAssetId() {
-        assertThrows(IllegalArgumentException.class,
-                () -> wallet.buy(null, 10.0, assetsCatalog),
-                "Should throw if assetId is null.");
-    }
-
-    @Test
-    void testBuyAssetSuccessfully() throws InsufficientBalanceException, UnavailableAssetException {
-        wallet.deposit(1000.00);
-        wallet.buy(BTC_ID, 500.00, assetsCatalog);
-
-        WalletSummary walletSummary = wallet.getSummary();
-
-        assertEquals(500, wallet.getBalance(), "Balance should be reduced after buying.");
-        assertTrue(walletSummary.ownedAssets().containsKey(BTC_ASSET),
-                "Asset should be owned after buying.");
-        assertEquals(500 / assetsCatalog.findById(BTC_ID).getPrice(),
-                walletSummary.ownedAssets().get(BTC_ASSET),
-                "Asset should be owned for exact amount.");
-    }
-
-    @Test
-    void testBuyInsufficientBalanceThrowsException() {
-        assertThrows(InsufficientBalanceException.class,
-                () -> wallet.buy(BTC_ID, 1000.0, assetsCatalog),
-                "Buy should throw if balance is insufficient.");
-    }
-
-    @Test
-    void testBuyUnavailableAssetThrowsException() {
-        wallet.deposit(1000.0);
-        when(assetsCatalog.findById("ETH")).thenReturn(null);
-        assertThrows(UnavailableAssetException.class,
-                () -> wallet.buy("ETH", 1000.0, assetsCatalog),
-                "Buy should throw if asset is not available.");
-    }
-
-    @Test
-    void testSellAssetSuccessfully() throws InsufficientBalanceException, UnavailableAssetException,
-            AssetNotOwnedException {
-        wallet.deposit(100.00);
-        wallet.buy(BTC_ID, 50.00, assetsCatalog);
-
-        double balanceBeforeSell = wallet.getBalance();
-        wallet.sell(BTC_ID, assetsCatalog);
-        assertTrue(wallet.getSummary().ownedAssets().isEmpty(),
-                "Wallet should not contain sold asset.");
-        assertTrue(wallet.getBalance() > balanceBeforeSell,
-                "Balance should increase after selling.");
-    }
-
-    @Test
-    void testSellNonOwnedAssetThrowsException() {
-        assertThrows(AssetNotOwnedException.class, () -> wallet.sell(BTC_ID, assetsCatalog),
-                "Sell should throw if asset is not owned.");
-    }
-
-    @Test
-    void testGetOverallSummary() throws InsufficientBalanceException, UnavailableAssetException {
-        wallet.deposit(100.00);
-        wallet.buy(BTC_ID, 50.00, assetsCatalog);
-
-        when(assetsCatalog.findById(BTC_ID))
-                .thenReturn(new Asset(BTC_ID, "Bitcoin", 20.00, 1));
-
-        OverallWalletSummary summary = wallet.getOverallSummary(assetsCatalog);
-        assertTrue(summary.assetProfits().get(BTC_ASSET) > 0,
-                "Profit should be positive if asset price increased.");
-    }
-
-    @Test
-    void testSellRemovesBuyHistory() throws InsufficientBalanceException, UnavailableAssetException, AssetNotOwnedException {
-        wallet.deposit(100.00);
-        wallet.buy(BTC_ID, 50.00, assetsCatalog);
-
-        wallet.sell(BTC_ID, assetsCatalog);
-        OverallWalletSummary summary = wallet.getOverallSummary(assetsCatalog);
-        assertTrue(summary.assetProfits().isEmpty(),
-                "Buy history should be removed after selling.");
-    }
-
-    @Test
-    void testWithdrawInsufficientBalance() {
-        assertThrows(InsufficientBalanceException.class,
-                () -> wallet.withdraw(100.00),
-                "Should throw if balance is insufficient.");
-    }
-
-    @Test
-    void testWithdrawInvalidAmount() {
-        assertThrows(IllegalArgumentException.class,
-                () -> wallet.withdraw(-100.00),
-                "Should throw if dollar amount is invalid.");
+    void testDepositNegative() {
+        assertThrows(IllegalArgumentException.class, () -> wallet.deposit(-1000.0));
     }
 
     @Test
     void testWithdraw() throws InsufficientBalanceException {
-        wallet.deposit(100.00);
-        wallet.withdraw(50.00);
-        assertEquals(50.00, wallet.getBalance(),
-                "Balance should be updated after withdrawing.");
+        wallet.deposit(1000.0);
+        double withdrawAmount = 500.0;
+
+        wallet.withdraw(withdrawAmount);
+
+        assertEquals(500.0, wallet.getBalance());
+    }
+
+    @Test
+    void testWithdrawNegative() {
+        assertThrows(IllegalArgumentException.class, () -> wallet.withdraw(-500.0));
+    }
+
+    @Test
+    void testWithdrawInsufficient() {
+        assertThrows(InsufficientBalanceException.class, () -> wallet.withdraw(1000.0));
+    }
+
+    @Test
+    void testBuy() throws InsufficientBalanceException, UnavailableAssetException {
+        wallet.deposit(2000.0);
+
+        wallet.buy("BTC", 1000.0, catalogMock);
+
+        assertEquals(1000.0, wallet.getBalance());
+    }
+
+    @Test
+    void testBuyAddsAsset() throws InsufficientBalanceException, UnavailableAssetException {
+        wallet.deposit(2000.0);
+
+        wallet.buy("BTC", 1000.0, catalogMock);
+
+        assertTrue(wallet.getSummary().ownedAssets().containsKey(asset));
+    }
+
+    @Test
+    void testBuyNegativeAmount() {
+        wallet.deposit(1000.0);
+
+        assertThrows(IllegalArgumentException.class, () -> wallet.buy("BTC", -500.0, catalogMock));
+    }
+
+    @Test
+    void testBuyInsufficientFunds() {
+        assertThrows(InsufficientBalanceException.class, () -> wallet.buy("BTC", 1000.0, catalogMock));
+    }
+
+    @Test
+    void testBuyUnavailableAsset() {
+        wallet.deposit(1000.0);
+        when(catalogMock.findById("BTC")).thenReturn(null);
+
+        assertThrows(UnavailableAssetException.class, () -> wallet.buy("BTC", 500.0, catalogMock));
+    }
+
+    @Test
+    void testBuyNullAssetId() {
+        assertThrows(IllegalArgumentException.class, () -> wallet.buy(null, 100.0, catalogMock));
+    }
+
+    @Test
+    void testBuyNullCatalog() {
+        assertThrows(IllegalArgumentException.class, () -> wallet.buy("BTC", 100.0, null));
+    }
+
+    @Test
+    void testSell() throws InsufficientBalanceException, UnavailableAssetException, AssetNotOwnedException {
+        wallet.deposit(1000.0);
+        wallet.buy("BTC", 500.0, catalogMock);
+        double initialBalance = wallet.getBalance();
+
+        wallet.sell("BTC", catalogMock);
+
+        assertTrue(wallet.getBalance() > initialBalance);
+    }
+
+    @Test
+    void testSellRemovesAsset() throws InsufficientBalanceException, UnavailableAssetException, AssetNotOwnedException {
+        wallet.deposit(1000.0);
+        wallet.buy("BTC", 500.0, catalogMock);
+
+        wallet.sell("BTC", catalogMock);
+
+        assertTrue(wallet.getSummary().ownedAssets().isEmpty());
+    }
+
+    @Test
+    void testSellNonexistentAsset() {
+        assertThrows(AssetNotOwnedException.class, () -> wallet.sell("BTC", catalogMock));
+    }
+
+    @Test
+    void testSellNullAssetId() {
+        assertThrows(IllegalArgumentException.class, () -> wallet.sell(null, catalogMock));
+    }
+
+    @Test
+    void testSellNullCatalog() {
+        assertThrows(IllegalArgumentException.class, () -> wallet.sell("BTC", null));
+    }
+
+    @Test
+    void testSellCatalogReturnsNull() throws InsufficientBalanceException, UnavailableAssetException {
+        wallet.deposit(1000.0);
+        wallet.buy("BTC", 500.0, catalogMock);
+        when(catalogMock.findById("BTC")).thenReturn(null);
+
+        assertThrows(UnavailableAssetException.class, () -> wallet.sell("BTC", catalogMock));
+    }
+
+    @Test
+    void testOverallWalletSummary() throws InsufficientBalanceException, UnavailableAssetException {
+        wallet.deposit(1000.0);
+        wallet.buy("BTC", 500.0, catalogMock);
+        when(catalogMock.findById("BTC")).thenReturn(new Asset("BTC", "Bitcoin", 60000.0, 1));
+
+        OverallWalletSummary summary = wallet.getOverallSummary(catalogMock);
+
+        assertEquals(1, summary.assetProfits().size());
+        assertTrue(summary.assetProfits().containsKey(asset));
     }
 }

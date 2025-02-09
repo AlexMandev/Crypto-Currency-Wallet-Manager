@@ -1,10 +1,12 @@
 package bg.sofia.uni.fmi.mjt.crypto.wallet.storage;
 
 import bg.sofia.uni.fmi.mjt.crypto.wallet.exception.UserAlreadyExistsException;
+import bg.sofia.uni.fmi.mjt.crypto.wallet.logs.Logs;
 import bg.sofia.uni.fmi.mjt.crypto.wallet.user.User;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -42,9 +44,9 @@ public class InMemoryUserRepository implements UserRepository {
     public void load() {
         try (ObjectInputStream usersStream = new ObjectInputStream(new FileInputStream(FILE_PATH))) {
             users = (Map<String, User>) usersStream.readObject();
-        } catch (IOException e) {
-            throw new UncheckedIOException("Error occurred when loading users from file.", e);
-        } catch (ClassNotFoundException e) {
+        } catch (FileNotFoundException e) {
+            Logs.logError("Couldn't find file that stores the users.", e);
+        } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException("Error occurred when loading users from file.", e);
         }
     }
