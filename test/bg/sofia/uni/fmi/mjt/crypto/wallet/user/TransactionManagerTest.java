@@ -42,7 +42,7 @@ class TransactionManagerTest {
 
         double result = manager.buy(asset, dollarAmount, currentPrice);
 
-        assertEquals(expectedAmount, result);
+        assertEquals(expectedAmount, result, "Buy should calculate the bought amount.");
     }
 
     @Test
@@ -53,7 +53,7 @@ class TransactionManagerTest {
 
         manager.buy(asset, dollarAmount, currentPrice);
 
-        assertEquals(expectedAmount, ownedAssets.get(asset));
+        assertEquals(expectedAmount, ownedAssets.get(asset), "Buy should add the asset as owned.");
     }
 
     @Test
@@ -63,7 +63,7 @@ class TransactionManagerTest {
 
         manager.buy(asset, dollarAmount, currentPrice);
 
-        assertEquals(dollarAmount, buyHistory.get(asset));
+        assertEquals(dollarAmount, buyHistory.get(asset), "Buy should update the history.");
     }
 
     @Test
@@ -76,7 +76,7 @@ class TransactionManagerTest {
 
         manager.buy(asset, dollarAmount, currentPrice);
 
-        assertEquals(expectedAmount, ownedAssets.get(asset));
+        assertEquals(expectedAmount, ownedAssets.get(asset), "Buy should update the owned amount.");
     }
 
     @Test
@@ -87,7 +87,7 @@ class TransactionManagerTest {
 
         manager.buy(asset, dollarAmount, 50000.0);
 
-        assertEquals(6000.0, buyHistory.get(asset));
+        assertEquals(6000.0, buyHistory.get(asset), "Buy should update the history.");
     }
 
     @Test
@@ -100,7 +100,7 @@ class TransactionManagerTest {
 
         double result = manager.sell(asset, currentPrice);
 
-        assertEquals(expectedIncome, result);
+        assertEquals(expectedIncome, result, "Sell should return the correct income.");
     }
 
     @Test
@@ -110,7 +110,7 @@ class TransactionManagerTest {
 
         manager.sell(asset, 60000.0);
 
-        assertFalse(ownedAssets.containsKey(asset));
+        assertFalse(ownedAssets.containsKey(asset), "Sell should remove the owned asset.");
     }
 
     @Test
@@ -120,13 +120,14 @@ class TransactionManagerTest {
 
         manager.sell(asset, 60000.0);
 
-        assertFalse(buyHistory.containsKey(asset));
+        assertFalse(buyHistory.containsKey(asset), "Sell should remove the asset from history.");
     }
 
     @Test
-    void testSellNonexistentAsset() {
+    void testSellNotOwnedAsset() {
         assertThrows(AssetNotOwnedException.class,
-                () -> manager.sell(asset, 50000.0));
+                () -> manager.sell(asset, 50000.0),
+                "Sell should throw if asset is not owned.");
     }
 
     @Test
@@ -138,7 +139,7 @@ class TransactionManagerTest {
 
         Map<Asset, Double> profits = manager.calculateProfits(catalogMock);
 
-        assertEquals(expectedProfit, profits.get(asset));
+        assertEquals(expectedProfit, profits.get(asset), "CalculateProfits should calculate correct profits.");
     }
 
     @Test
@@ -149,6 +150,6 @@ class TransactionManagerTest {
 
         Map<Asset, Double> profits = manager.calculateProfits(catalogMock);
 
-        assertTrue(profits.isEmpty());
+        assertTrue(profits.isEmpty(), "Calculate shouldn't add missing assets.");
     }
 }

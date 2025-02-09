@@ -40,12 +40,14 @@ class WalletTest {
 
         wallet.deposit(depositAmount);
 
-        assertEquals(initialBalance + depositAmount, wallet.getBalance());
+        assertEquals(initialBalance + depositAmount, wallet.getBalance(),
+                "Deposit should add the dollar amount to the balance.");
     }
 
     @Test
     void testDepositNegative() {
-        assertThrows(IllegalArgumentException.class, () -> wallet.deposit(-1000.0));
+        assertThrows(IllegalArgumentException.class, () -> wallet.deposit(-1000.0),
+                "Deposit should throw for invalid amount.");
     }
 
     @Test
@@ -55,17 +57,22 @@ class WalletTest {
 
         wallet.withdraw(withdrawAmount);
 
-        assertEquals(500.0, wallet.getBalance());
+        assertEquals(500.0, wallet.getBalance(),
+                "Withdraw should decrease the wallet's balance.");
     }
 
     @Test
     void testWithdrawNegative() {
-        assertThrows(IllegalArgumentException.class, () -> wallet.withdraw(-500.0));
+        assertThrows(IllegalArgumentException.class,
+                () -> wallet.withdraw(-500.0),
+                "Withdraw should throw for invalid amount.");
     }
 
     @Test
     void testWithdrawInsufficient() {
-        assertThrows(InsufficientBalanceException.class, () -> wallet.withdraw(1000.0));
+        assertThrows(InsufficientBalanceException.class,
+                () -> wallet.withdraw(1000.0),
+                "Withdraw should throw if the balance isn't enough.");
     }
 
     @Test
@@ -74,7 +81,8 @@ class WalletTest {
 
         wallet.buy("BTC", 1000.0, catalogMock);
 
-        assertEquals(1000.0, wallet.getBalance());
+        assertEquals(1000.0, wallet.getBalance(),
+                "Buy should decrease the wallet's balance.");
     }
 
     @Test
@@ -83,19 +91,24 @@ class WalletTest {
 
         wallet.buy("BTC", 1000.0, catalogMock);
 
-        assertTrue(wallet.getSummary().ownedAssets().containsKey(asset));
+        assertTrue(wallet.getSummary().ownedAssets().containsKey(asset),
+                "Buy should add the asset to the owned assets.");
     }
 
     @Test
     void testBuyNegativeAmount() {
         wallet.deposit(1000.0);
 
-        assertThrows(IllegalArgumentException.class, () -> wallet.buy("BTC", -500.0, catalogMock));
+        assertThrows(IllegalArgumentException.class,
+                () -> wallet.buy("BTC", -500.0, catalogMock),
+                "Buy should throw for negative amount.");
     }
 
     @Test
     void testBuyInsufficientFunds() {
-        assertThrows(InsufficientBalanceException.class, () -> wallet.buy("BTC", 1000.0, catalogMock));
+        assertThrows(InsufficientBalanceException.class,
+                () -> wallet.buy("BTC", 1000.0, catalogMock),
+                "Buy should throw for insufficient balance.");
     }
 
     @Test
@@ -103,17 +116,23 @@ class WalletTest {
         wallet.deposit(1000.0);
         when(catalogMock.findById("BTC")).thenReturn(null);
 
-        assertThrows(UnavailableAssetException.class, () -> wallet.buy("BTC", 500.0, catalogMock));
+        assertThrows(UnavailableAssetException.class,
+                () -> wallet.buy("BTC", 500.0, catalogMock),
+                "Buy should throw if asset is null.");
     }
 
     @Test
     void testBuyNullAssetId() {
-        assertThrows(IllegalArgumentException.class, () -> wallet.buy(null, 100.0, catalogMock));
+        assertThrows(IllegalArgumentException.class,
+                () -> wallet.buy(null, 100.0, catalogMock),
+                "Buy should throw if asset id is null.");
     }
 
     @Test
     void testBuyNullCatalog() {
-        assertThrows(IllegalArgumentException.class, () -> wallet.buy("BTC", 100.0, null));
+        assertThrows(IllegalArgumentException.class,
+                () -> wallet.buy("BTC", 100.0, null),
+                "Buy should throw if catalog is null.");
     }
 
     @Test
@@ -124,7 +143,8 @@ class WalletTest {
 
         wallet.sell("BTC", catalogMock);
 
-        assertTrue(wallet.getBalance() > initialBalance);
+        assertTrue(wallet.getBalance() > initialBalance,
+                "Sell should add to the wallet's balance.");
     }
 
     @Test
@@ -134,22 +154,29 @@ class WalletTest {
 
         wallet.sell("BTC", catalogMock);
 
-        assertTrue(wallet.getSummary().ownedAssets().isEmpty());
+        assertTrue(wallet.getSummary().ownedAssets().isEmpty(),
+                "Sell should remove the owned asset.");
     }
 
     @Test
     void testSellNonexistentAsset() {
-        assertThrows(AssetNotOwnedException.class, () -> wallet.sell("BTC", catalogMock));
+        assertThrows(AssetNotOwnedException.class,
+                () -> wallet.sell("BTC", catalogMock),
+                "Sell should throw if asset isn't owned.");
     }
 
     @Test
     void testSellNullAssetId() {
-        assertThrows(IllegalArgumentException.class, () -> wallet.sell(null, catalogMock));
+        assertThrows(IllegalArgumentException.class,
+                () -> wallet.sell(null, catalogMock),
+                "Sell should throw if asset id is null.");
     }
 
     @Test
     void testSellNullCatalog() {
-        assertThrows(IllegalArgumentException.class, () -> wallet.sell("BTC", null));
+        assertThrows(IllegalArgumentException.class,
+                () -> wallet.sell("BTC", null),
+                "Sell should throw if catalog is null.");
     }
 
     @Test
@@ -158,7 +185,9 @@ class WalletTest {
         wallet.buy("BTC", 500.0, catalogMock);
         when(catalogMock.findById("BTC")).thenReturn(null);
 
-        assertThrows(UnavailableAssetException.class, () -> wallet.sell("BTC", catalogMock));
+        assertThrows(UnavailableAssetException.class,
+                () -> wallet.sell("BTC", catalogMock),
+                "Sell should throw if asset is unavailable.");
     }
 
     @Test
@@ -169,7 +198,9 @@ class WalletTest {
 
         OverallWalletSummary summary = wallet.getOverallSummary(catalogMock);
 
-        assertEquals(1, summary.assetProfits().size());
-        assertTrue(summary.assetProfits().containsKey(asset));
+        assertEquals(1, summary.assetProfits().size(),
+                "One asset should be owned.");
+        assertTrue(summary.assetProfits().containsKey(asset),
+                "The bought asset should be in the profits map.");
     }
 }
