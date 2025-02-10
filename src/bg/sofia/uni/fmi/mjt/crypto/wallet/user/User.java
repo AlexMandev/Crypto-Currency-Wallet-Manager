@@ -15,6 +15,12 @@ public class User implements Serializable {
     private final Wallet wallet;
 
     public User(String username, String password) {
+        if (username == null) {
+            throw new IllegalArgumentException("Username cannot be null.");
+        }
+        if (password == null) {
+            throw new IllegalArgumentException("Password cannot be null.");
+        }
         this.username = username;
         this.hashedPassword = HashAlgorithm.hashPassword(password);
         this.wallet = new Wallet();
@@ -25,6 +31,9 @@ public class User implements Serializable {
     }
 
     public boolean matchesPassword(String password) {
+        if (password == null) {
+            throw new IllegalArgumentException("Password cannot be null.");
+        }
         return HashAlgorithm.hashPassword(password).equals(hashedPassword);
     }
 

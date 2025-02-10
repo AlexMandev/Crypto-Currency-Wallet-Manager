@@ -63,7 +63,7 @@ public class CryptoCurrencyWalletManagerNioServer {
             buffer = ByteBuffer.allocate(BUFFER_SIZE);
             configureServerSocketChannel(server, selector);
             isRunning.set(true);
-            stopper.submit(new ServerStopRunnable(this));
+            stopper.submit(new ServerStopRunnable(this, System.in));
             selectKeys();
         } catch (IOException e) {
             Logs.logError("An IOException occurred while starting the server.", e);

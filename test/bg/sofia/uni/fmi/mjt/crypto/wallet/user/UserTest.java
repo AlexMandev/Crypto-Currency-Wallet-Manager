@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UserTest {
@@ -43,5 +44,26 @@ class UserTest {
         User differentUser = new User("otherUser", PASSWORD);
         assertNotEquals(user, differentUser,
                 "Users with different usernames should not be equal.");
+    }
+
+    @Test
+    void testNullPassword() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new User("username", null),
+                "Constructor should throw for null password.");
+    }
+
+    @Test
+    void testNullUsername() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new User(null, "password"),
+                "Constructor should throw for null username");
+    }
+
+    @Test
+    void testMatchesPasswordNullPassword() {
+        assertThrows(IllegalArgumentException.class,
+                () -> user.matchesPassword(null),
+                "Matches password should throw for null argument.");
     }
 }
