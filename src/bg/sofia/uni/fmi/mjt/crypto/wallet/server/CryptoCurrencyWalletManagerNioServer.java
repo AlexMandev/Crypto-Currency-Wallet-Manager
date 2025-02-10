@@ -1,6 +1,5 @@
 package bg.sofia.uni.fmi.mjt.crypto.wallet.server;
 
-import bg.sofia.uni.fmi.mjt.crypto.wallet.coin.api.AssetRequestClient;
 import bg.sofia.uni.fmi.mjt.crypto.wallet.coin.api.CryptoAssetUpdaterRunnable;
 import bg.sofia.uni.fmi.mjt.crypto.wallet.command.Command;
 import bg.sofia.uni.fmi.mjt.crypto.wallet.command.CommandFactory;
@@ -8,14 +7,10 @@ import bg.sofia.uni.fmi.mjt.crypto.wallet.exception.CommandArgumentCountExceptio
 import bg.sofia.uni.fmi.mjt.crypto.wallet.exception.InvalidCommandArgumentException;
 import bg.sofia.uni.fmi.mjt.crypto.wallet.exception.UnknownCommandException;
 import bg.sofia.uni.fmi.mjt.crypto.wallet.logs.Logs;
-import bg.sofia.uni.fmi.mjt.crypto.wallet.storage.AssetsCatalog;
-import bg.sofia.uni.fmi.mjt.crypto.wallet.storage.InMemoryUserRepository;
-import bg.sofia.uni.fmi.mjt.crypto.wallet.storage.UserRepository;
 import bg.sofia.uni.fmi.mjt.crypto.wallet.user.User;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.http.HttpClient;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -35,9 +30,6 @@ public class CryptoCurrencyWalletManagerNioServer {
 
     private static final long INITIAL_DELAY = 0;
     private static final long MINUTES_BETWEEN_API_CALLS = 30;
-
-    private static final String API_KEY = "5e7e8168-b1ca-460c-aab9-9b4905f7ef31";
-    private static final int DEFAULT_PORT = 10001;
 
     private final int port;
     private ByteBuffer buffer;
@@ -173,21 +165,6 @@ public class CryptoCurrencyWalletManagerNioServer {
             client.close();
             key.cancel();
             Logs.logError("An error occurred when sending server response to client's socket channel.", e);
-        }
-    }
-
-    public static void main(String[] args) {
-        try (UserRepository users = new InMemoryUserRepository()) {
-            users.load();
-            AssetsCatalog catalog = new AssetsCatalog();
-            AssetRequestClient apiClient = new AssetRequestClient(HttpClient.newHttpClient(), API_KEY);
-            CryptoAssetUpdaterRunnable runnable = new CryptoAssetUpdaterRunnable(apiClient, catalog);
-            CommandFactory commandFactory = new CommandFactory(users, catalog);
-            CryptoCurrencyWalletManagerNioServer server =
-                    new CryptoCurrencyWalletManagerNioServer(DEFAULT_PORT, commandFactory, runnable);
-            server.start();
-        } catch (Exception e) {
-            Logs.logError("Unknown error occurred in the server program.", e);
         }
     }
 }
