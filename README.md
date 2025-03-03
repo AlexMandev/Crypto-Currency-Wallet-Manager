@@ -24,6 +24,7 @@ The application follows a client-server architecture:
 - **Client**: Console application that handles user input and displays formatted responses
 - **Server**: NIO-based server that processes requests, manages user data, communicates with CoinAPI and logs unexpected errors to a file. It uses a ScheduledExecutorServices to update the prices of the cryptocurrencies
 - **Data Storage**: Binary files to persist user information and wallet data
+- **Unit Tests**: The project reaches 70% coverage with JUnit 5 and Mockito. 
 
 ## Commands
 
