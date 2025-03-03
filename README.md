@@ -1,6 +1,6 @@
 # Cryptocurrency Wallet Manager
 
-A client-server Java application for the 'Modern Java Technologies' course @ Faculty of Mathematics and Informatics, Sofia University. It simulates a personal cryptocurrency wallet, allowing users to manage their portfolio, buy and sell cryptocurrencies, and track their investments.
+A client-server Java application created as a final project for the 'Modern Java Technologies' course @ Faculty of Mathematics and Informatics, Sofia University. It simulates a personal cryptocurrency wallet, allowing users to manage their portfolio, buy and sell cryptocurrencies, and track their investments.
 
 ## Features
 
